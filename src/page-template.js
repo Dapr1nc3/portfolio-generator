@@ -12,13 +12,82 @@ const generateAbout = aboutText => {
   `;
 };
 
-module.exports = templateData => {
- // console.log(templateData);
+// NOTES ON THIS SECTION
+// creates a section dedicated to displaying projects made by user 
+// the whole point of the .map() method, to use an array of data to create a whole new set of data based on it. This doesn't affect the original array at all; it just uses its data to create something new.
+// For the projects, we use .map() to iterate through the projectArr, we destructure each project's object data based on property name, and we return an entire set of HTML code with it!
+// We use a .join() method to turn the projectHtmlArr into a combined string of HTML before returning.
+// Using the .filter() array method, we created two new arrays of project data based on whether their feature property was true or false. Once we separated the array data, we created two sets of HTML data and got them into the <section> element.
+
+  const generateProjects = projectsArr => {
+    // get array of just featured projects
+    const featuredProjects = projectsArr.filter(project => {
+      if (project.feature) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  
+    // get array of all non-featured projects
+    const nonFeaturedProjects = projectsArr.filter(project => {
+      if (!project.feature) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  
+    const featuredProjectHtmlArr = featuredProjects.map(({ name, description, languages, link }) => {
+      return `
+        <div class="col-12 mb-2 bg-dark text-light p-3 flex-column">
+          <h3 class="portfolio-item-title text-light">${name}</h3>
+          <h5 class="portfolio-languages">
+            Built With:
+            ${languages.join(', ')}
+          </h5>
+          <p>${description}</p>
+          <a href="${link}" class="btn mt-auto"><i class="fab fa-github mr-2"></i>View Project on GitHub</a>
+        </div>
+      `;
+    });
+  
+    const nonFeaturedProjectHtmlArr = nonFeaturedProjects.map(
+      ({ name, description, languages, link }) => {
+        return `
+          <div class="col-12 col-md-6 mb-2 bg-dark text-light p-3 flex-column">
+            <h3 class="portfolio-item-title text-light">${name}</h3>
+            <h5 class="portfolio-languages">
+              Built With:
+              ${languages.join(', ')}
+            </h5>
+            <p>${description}</p>
+            <a href="${link}" class="btn mt-auto"><i class="fab fa-github mr-2"></i>View Project on GitHub</a>
+          </div>
+        `;
+      }
+    );
+  
+    return `
+      <section class="my-3" id="portfolio">
+        <h2 class="text-dark bg-primary p-2 display-inline-block">Work</h2>
+        <div class="flex-row justify-space-between">
+        ${featuredProjectHtmlArr.join('')}
+        ${nonFeaturedProjectHtmlArr.join('')}
+        </div>
+      </section>
+    `;
+  };
+
+// NOTES ON THIS SECTION
 // destructure page data by section
 // this will create three variables based on data in templateData
-const { projects, about, ...header } = templateData;
-console.log(projects, about, header);
-return `
+
+module.exports = templateData => {
+  // console.log(templateData);
+  const { projects, about, ...header } = templateData;
+  console.log(projects, about, header);
+  return `
 <!DOCTYPE html>
 <html lang="en">
 
@@ -37,14 +106,14 @@ return `
     <div class="container flex-row justify-space-between align-center py-3">
       <h1 class="page-title text-secondary bg-dark py-2 px-3">${header.name}</h1>
       <nav class="flex-row">
-        <a class="ml-2 my-1 px-2 py-1 bg-secondary text-dark" href="https://github.com/${
-          header.github
-        }">GitHub</a>
+        <a class="ml-2 my-1 px-2 py-1 bg-secondary text-dark" href="https://github.com/${header.github
+    }">GitHub</a>
       </nav>
     </div>
   </header>
   <main class="container my-5">
     ${generateAbout(about)}
+    ${generateProjects(projects)}
   </main>
   <footer class="container text-center py-3">
     <h3 class="text-dark">&copy; ${new Date().getFullYear()} by ${header.name}</h3>
