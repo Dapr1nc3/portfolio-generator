@@ -1,5 +1,8 @@
 const inquirer = require('inquirer');
-const fs = require('fs');
+
+// This will import the exported object from generate-site.js, allowing us to use generateSite.writeFile() and generateSite.copyFile()
+const { writeFile, copyFile } = require('./utils/generate-site');
+
 // This function runs the html template page if the function is called 
 const generatePage = require('./src/page-template');
 
@@ -132,23 +135,26 @@ const promptProject = (portfolioData) => {
     });
 };
 
+// NOTES ON THIS SECTION
+// A Promise chain is a series of Promise-based functions that run in order. 
+// Instead of having each Promise return to its own .then() method, we can return the function within a .then()'s
+// function and chain another .then() method onto it.
 promptUser()
   .then(promptProject)
   .then(portfolioData => {
-     const pageHTML = generatePage(portfolioData);
-
-     fs.writeFile('./dist/index.html', pageHTML, err => {
-       if (err) throw new Error(err);
-
-       console.log('Page created! Check out index.html in this directory to see it!');
-
-       fs.copyFile('./src/style.css', './dist/style.css', err => {
-        if (err) {
-          console.log(err);
-          return;
-        }
-        console.log('Style sheet copied successfully!');
-      });
-    });
-     })
+    return generatePage(portfolioData);
+  })
+  .then(pageHTML => {
+    return writeFile(pageHTML);
+  })
+  .then(writeFileResponse => {
+    console.log(writeFileResponse);
+    return copyFile();
+  })
+  .then(copyFileResponse => {
+    console.log(copyFileResponse);
+  })
+  .catch(err => {
+    console.log(err);
+  });
   
