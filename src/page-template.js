@@ -1,3 +1,17 @@
+// creates the about section and generates it
+const generateAbout = aboutText => {
+  // if nothing is typed then, will simply return an empty string. If something is typed, however, will return the entire <section> element. 
+  if (!aboutText) {
+    return '';
+  }
+  return `
+    <section class="my-3" id="about">
+      <h2 class="text-dark bg-primary p-2 display-inline-block">About Me</h2>
+      <p>${aboutText}</p>
+    </section>
+  `;
+};
+
 module.exports = templateData => {
  // console.log(templateData);
 // destructure page data by section
@@ -30,7 +44,7 @@ return `
     </div>
   </header>
   <main class="container my-5">
-
+    ${generateAbout(about)}
   </main>
   <footer class="container text-center py-3">
     <h3 class="text-dark">&copy; ${new Date().getFullYear()} by ${header.name}</h3>
